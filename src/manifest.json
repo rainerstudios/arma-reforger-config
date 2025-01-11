@@ -1,0 +1,10 @@
+{
+    "manifest_version": 3,
+    "name": "Arma Reforger Config Generator",
+    "version": "1.0.0",
+    "description": "Generate configuration files for Arma Reforger servers",
+    "permissions": ["storage"],
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }
