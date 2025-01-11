@@ -15,6 +15,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var _excluded = ["label", "type", "name", "defaultValue", "onChange"];
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -33,6 +34,9 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var s = Object.getOwnPropertySymbols(e); for (r = 0; r < s.length; r++) o = s[r], t.includes(o) || {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
+function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (e.includes(n)) continue; t[n] = r[n]; } return t; }
 
 
 // Icons as components
@@ -96,27 +100,69 @@ var LOCAL_WORKSHOP_DATA = {
     "scenariosIds": []
   }]
 };
+var ConfigInput = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(function (_ref) {
+  var label = _ref.label,
+    _ref$type = _ref.type,
+    type = _ref$type === void 0 ? "text" : _ref$type,
+    name = _ref.name,
+    defaultValue = _ref.defaultValue,
+    onChange = _ref.onChange,
+    props = _objectWithoutProperties(_ref, _excluded);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+    className: "block text-sm font-medium text-gray-700"
+  }, label), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", _extends({
+    type: type,
+    name: name,
+    defaultValue: defaultValue,
+    onChange: onChange,
+    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+  }, props)));
+});
+var ConfigCheckbox = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(function (_ref2) {
+  var label = _ref2.label,
+    name = _ref2.name,
+    defaultChecked = _ref2.defaultChecked,
+    onChange = _ref2.onChange;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+    className: "flex items-center"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    type: "checkbox",
+    name: name,
+    defaultChecked: defaultChecked,
+    onChange: onChange,
+    className: "text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
+    className: "ml-2 text-sm text-gray-600"
+  }, label)));
+});
+var FormSection = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(function (_ref3) {
+  var title = _ref3.title,
+    children = _ref3.children;
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "mb-6"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h3", {
+    className: "mb-4 text-lg font-medium text-gray-900"
+  }, title), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "space-y-4"
+  }, children));
+});
 
 // Enhanced Mod Selector Component
-var ModSelector = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(function (_ref) {
-  var _ref$selectedMods = _ref.selectedMods,
-    selectedMods = _ref$selectedMods === void 0 ? [] : _ref$selectedMods,
-    onChange = _ref.onChange;
+var ModSelector = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(function (_ref4) {
+  var _ref4$selectedMods = _ref4.selectedMods,
+    selectedMods = _ref4$selectedMods === void 0 ? [] : _ref4$selectedMods,
+    onChange = _ref4.onChange;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
     _useState2 = _slicedToArray(_useState, 2),
     searchTerm = _useState2[0],
     setSearchTerm = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(LOCAL_WORKSHOP_DATA),
     _useState4 = _slicedToArray(_useState3, 2),
-    isLoading = _useState4[0],
-    setIsLoading = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(LOCAL_WORKSHOP_DATA),
-    _useState6 = _slicedToArray(_useState5, 2),
-    workshopData = _useState6[0],
-    setWorkshopData = _useState6[1];
+    workshopData = _useState4[0],
+    setWorkshopData = _useState4[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var fetchWorkshopData = /*#__PURE__*/function () {
-      var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+      var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
         var cachedData, cacheTime, cacheAge, response, data;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -162,10 +208,10 @@ var ModSelector = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo
         }, _callee, null, [[0, 20]]);
       }));
       return function fetchWorkshopData() {
-        return _ref2.apply(this, arguments);
+        return _ref5.apply(this, arguments);
       };
     }();
-    setTimeout(fetchWorkshopData, 100);
+    fetchWorkshopData();
   }, []);
   var filteredMods = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     if (!(workshopData !== null && workshopData !== void 0 && workshopData.data)) return [];
@@ -177,34 +223,15 @@ var ModSelector = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo
     var isSelected = selectedMods.some(function (selected) {
       return selected.modId === mod.id;
     });
-    var newMods;
-    if (isSelected) {
-      newMods = selectedMods.filter(function (selected) {
-        return selected.modId !== mod.id;
-      });
-    } else {
-      newMods = [].concat(_toConsumableArray(selectedMods), [{
-        modId: mod.id,
-        name: mod.name,
-        version: ""
-      }]);
-    }
+    var newMods = isSelected ? selectedMods.filter(function (selected) {
+      return selected.modId !== mod.id;
+    }) : [].concat(_toConsumableArray(selectedMods), [{
+      modId: mod.id,
+      name: mod.name,
+      version: ""
+    }]);
     onChange(newMods);
   }, [selectedMods, onChange]);
-  if (isLoading && !workshopData) {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-      className: "space-y-4"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-      className: "h-10 bg-gray-200 rounded animate-pulse"
-    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-      className: "space-y-2"
-    }, [1, 2, 3].map(function (i) {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-        key: i,
-        className: "h-12 bg-gray-200 rounded animate-pulse"
-      });
-    })));
-  }
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "space-y-4"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
@@ -219,9 +246,7 @@ var ModSelector = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo
       return setSearchTerm(e.target.value);
     },
     className: "w-full py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "space-y-2"
-  }, selectedMods.length > 0 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+  })), selectedMods.length > 0 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "mb-4"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h4", {
     className: "mb-2 text-sm font-medium text-gray-700"
@@ -272,15 +297,13 @@ var ModSelector = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo
       },
       className: "w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
     }));
-  }))));
+  })));
 });
-
-// Platform Button Component
-var PlatformButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(function (_ref3) {
-  var platform = _ref3.platform,
-    isSelected = _ref3.isSelected,
-    onClick = _ref3.onClick,
-    disabled = _ref3.disabled;
+var PlatformButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(function (_ref6) {
+  var platform = _ref6.platform,
+    isSelected = _ref6.isSelected,
+    onClick = _ref6.onClick,
+    disabled = _ref6.disabled;
   var platformNames = {
     "PLATFORM_PC": "PC",
     "PLATFORM_XBL": "Xbox",
@@ -293,151 +316,139 @@ var PlatformButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().m
     className: "px-4 py-2 rounded-md text-sm font-medium transition-colors\n        ".concat(isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200', "\n        ").concat(disabled ? 'opacity-50 cursor-not-allowed' : '')
   }, platformNames[platform]);
 });
-
-// Form Section Component
-var FormSection = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(function (_ref4) {
-  var title = _ref4.title,
-    children = _ref4.children;
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "mb-6"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h3", {
-    className: "mb-4 text-lg font-medium text-gray-900"
-  }, title), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "space-y-4"
-  }, children));
-});
 function ServerConfigForm() {
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
       bindAddress: '',
       bindPort: 2001,
       publicAddress: '',
-      publicPort: 2001,
-      a2s: {
-        address: '',
-        port: 17777
-      },
-      operating: {
-        lobbyPlayerSynchronise: true,
-        playerSaveTime: 120,
-        aiLimit: -1
-      },
-      game: {
-        name: '',
-        password: '',
-        passwordAdmin: '',
-        scenarioId: '',
-        playerCountLimit: 32,
-        visible: true,
-        supportedPlatforms: ["PLATFORM_PC"],
-        gameProperties: {
-          serverMaxViewDistance: 1600,
-          serverMinGrassDistance: 0,
-          networkViewDistance: 1500,
-          disableThirdPerson: false,
-          fastValidation: true,
-          battlEye: true,
-          VONDisableUI: false,
-          VONDisableDirectSpeechUI: false,
-          missionHeader: {}
-        },
-        mods: []
-      }
+      publicPort: 2001
+    }),
+    _useState6 = _slicedToArray(_useState5, 2),
+    networkConfig = _useState6[0],
+    setNetworkConfig = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      address: '',
+      port: 17777
     }),
     _useState8 = _slicedToArray(_useState7, 2),
-    formData = _useState8[0],
-    setFormData = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    a2sConfig = _useState8[0],
+    setA2sConfig = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      name: '',
+      password: '',
+      passwordAdmin: '',
+      scenarioId: '',
+      playerCountLimit: 32,
+      visible: true
+    }),
     _useState10 = _slicedToArray(_useState9, 2),
-    workshopData = _useState10[0],
-    setWorkshopData = _useState10[1];
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
+    gameBasicConfig = _useState10[0],
+    setGameBasicConfig = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      serverMaxViewDistance: 1600,
+      serverMinGrassDistance: 0,
+      networkViewDistance: 1500,
+      disableThirdPerson: false,
+      fastValidation: true,
+      battlEye: true,
+      VONDisableUI: false,
+      VONDisableDirectSpeechUI: false,
+      missionHeader: {}
+    }),
     _useState12 = _slicedToArray(_useState11, 2),
-    isLoading = _useState12[0],
-    setIsLoading = _useState12[1];
+    gameProperties = _useState12[0],
+    setGameProperties = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      lobbyPlayerSynchronise: true,
+      playerSaveTime: 120,
+      aiLimit: -1
+    }),
+    _useState14 = _slicedToArray(_useState13, 2),
+    operatingConfig = _useState14[0],
+    setOperatingConfig = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(["PLATFORM_PC"]),
+    _useState16 = _slicedToArray(_useState15, 2),
+    supportedPlatforms = _useState16[0],
+    setSupportedPlatforms = _useState16[1];
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState18 = _slicedToArray(_useState17, 2),
+    mods = _useState18[0],
+    setMods = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState20 = _slicedToArray(_useState19, 2),
+    workshopData = _useState20[0],
+    setWorkshopData = _useState20[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var fetchWorkshopData = /*#__PURE__*/function () {
-      var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var cachedData, parsedData, cacheTime, cacheAge, response, data;
+      var _ref7 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+        var cachedData, response, data;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               _context2.prev = 0;
-              setIsLoading(true);
               cachedData = localStorage.getItem('reforger-workshop-cache');
-              if (!cachedData) {
-                _context2.next = 11;
-                break;
+              if (cachedData) {
+                setWorkshopData(JSON.parse(cachedData));
               }
-              parsedData = JSON.parse(cachedData);
-              cacheTime = localStorage.getItem('reforger-workshop-cache-time');
-              cacheAge = Date.now() - parseInt(cacheTime || 0);
-              if (!(cacheAge < 3600000)) {
-                _context2.next = 11;
-                break;
-              }
-              setWorkshopData(parsedData);
-              setIsLoading(false);
-              return _context2.abrupt("return");
-            case 11:
-              _context2.next = 13;
+              _context2.next = 5;
               return fetch('https://files.ofpisnotdead.com/reforger-workshop.json');
-            case 13:
+            case 5:
               response = _context2.sent;
               if (response.ok) {
-                _context2.next = 16;
+                _context2.next = 8;
                 break;
               }
               throw new Error('Failed to fetch workshop data');
-            case 16:
-              _context2.next = 18;
+            case 8:
+              _context2.next = 10;
               return response.json();
-            case 18:
+            case 10:
               data = _context2.sent;
               localStorage.setItem('reforger-workshop-cache', JSON.stringify(data));
-              localStorage.setItem('reforger-workshop-cache-time', Date.now().toString());
               setWorkshopData(data);
-              _context2.next = 27;
+              _context2.next = 18;
               break;
-            case 24:
-              _context2.prev = 24;
+            case 15:
+              _context2.prev = 15;
               _context2.t0 = _context2["catch"](0);
               console.error('Error fetching workshop data:', _context2.t0);
-            case 27:
-              _context2.prev = 27;
-              setIsLoading(false);
-              return _context2.finish(27);
-            case 30:
+            case 18:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[0, 24, 27, 30]]);
+        }, _callee2, null, [[0, 15]]);
       }));
       return function fetchWorkshopData() {
-        return _ref5.apply(this, arguments);
+        return _ref7.apply(this, arguments);
       };
     }();
-    setTimeout(fetchWorkshopData, 100);
+    fetchWorkshopData();
   }, []);
-  var handleChange = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (event) {
-    var _event$target = event.target,
-      name = _event$target.name,
-      value = _event$target.value,
-      type = _event$target.type,
-      checked = _event$target.checked;
-    var keys = name.split('.');
-    setFormData(function (prevData) {
-      var newData = _objectSpread({}, prevData);
-      var current = newData;
-      for (var i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
-      }
-      current[keys[keys.length - 1]] = type === 'checkbox' ? checked : type === 'number' ? Number(value) : value;
-      return newData;
-    });
-  }, []);
+  var createDebouncedHandler = function createDebouncedHandler(setter) {
+    var timeoutId;
+    return function (e) {
+      var _e$target = e.target,
+        name = _e$target.name,
+        value = _e$target.value,
+        type = _e$target.type,
+        checked = _e$target.checked;
+      var finalValue = type === 'checkbox' ? checked : type === 'number' ? Number(value) : value;
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(function () {
+        setter(function (prev) {
+          return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, name, finalValue));
+        });
+      }, 100);
+    };
+  };
+  var handleNetworkChange = createDebouncedHandler(setNetworkConfig);
+  var handleA2SChange = createDebouncedHandler(setA2sConfig);
+  var handleGameBasicChange = createDebouncedHandler(setGameBasicConfig);
+  var handleGamePropertiesChange = createDebouncedHandler(setGameProperties);
+  var handleOperatingChange = createDebouncedHandler(setOperatingConfig);
   var handlePlatformChange = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function (platform) {
-    setFormData(function (prevData) {
-      var newPlatforms = _toConsumableArray(prevData.game.supportedPlatforms);
+    setSupportedPlatforms(function (prev) {
+      var newPlatforms = _toConsumableArray(prev);
       if (newPlatforms.includes(platform)) {
         newPlatforms = newPlatforms.filter(function (p) {
           return p !== platform;
@@ -448,19 +459,24 @@ function ServerConfigForm() {
       if (!newPlatforms.includes("PLATFORM_PC")) {
         newPlatforms.push("PLATFORM_PC");
       }
-      if (platform === "PLATFORM_PSN" && prevData.game.mods.length > 0) {
+      if (platform === "PLATFORM_PSN" && mods.length > 0) {
         newPlatforms = newPlatforms.filter(function (p) {
           return p !== "PLATFORM_PSN";
         });
       }
-      return _objectSpread(_objectSpread({}, prevData), {}, {
-        game: _objectSpread(_objectSpread({}, prevData.game), {}, {
-          supportedPlatforms: newPlatforms
-        })
-      });
+      return newPlatforms;
     });
-  }, []);
+  }, [mods]);
   var handleExport = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () {
+    var formData = _objectSpread(_objectSpread({}, networkConfig), {}, {
+      a2s: a2sConfig,
+      operating: operatingConfig,
+      game: _objectSpread(_objectSpread({}, gameBasicConfig), {}, {
+        supportedPlatforms: supportedPlatforms,
+        mods: mods,
+        gameProperties: gameProperties
+      })
+    });
     var fileData = JSON.stringify(formData, null, 2);
     var blob = new Blob([fileData], {
       type: "application/json"
@@ -471,54 +487,45 @@ function ServerConfigForm() {
     link.href = url;
     link.click();
     URL.revokeObjectURL(url);
-  }, [formData]);
-
-  // Scenarios
-  var ScenarioSelection = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(function () {
-    var scenarios = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
-      if (!workshopData) return [];
-      var workshopScenarios = workshopData.data.filter(function (item) {
-        var _item$scenariosIds;
-        return ((_item$scenariosIds = item.scenariosIds) === null || _item$scenariosIds === void 0 ? void 0 : _item$scenariosIds.length) > 0;
-      }).map(function (item) {
-        return {
-          label: item.name,
-          options: item.scenariosIds.map(function (scenario) {
-            return {
-              value: scenario,
-              label: scenario
-            };
-          })
-        };
-      });
-      var vanillaScenarios = [{
-        label: 'Official Scenarios',
-        options: [{
-          value: '{90F086877C27B6F6}Missions/99_Tutorial.conf',
-          label: 'Tutorial'
-        }, {
-          value: '{ECC61978EDCC2B5A}Missions/23_Campaign.conf',
-          label: 'Campaign'
-        }, {
-          value: '{59AD59368755F41A}Missions/21_GM_Eden.conf',
-          label: 'Game Master - Eden'
-        }]
-      }];
-      return [].concat(vanillaScenarios, _toConsumableArray(workshopScenarios));
-    }, [workshopData]);
-    if (isLoading) return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-      className: "h-10 bg-gray-200 rounded animate-pulse"
-    });
+  }, [networkConfig, a2sConfig, operatingConfig, gameBasicConfig, supportedPlatforms, mods, gameProperties]);
+  var ScenarioSelection = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
+    var scenarios = (workshopData === null || workshopData === void 0 ? void 0 : workshopData.data.filter(function (item) {
+      var _item$scenariosIds;
+      return ((_item$scenariosIds = item.scenariosIds) === null || _item$scenariosIds === void 0 ? void 0 : _item$scenariosIds.length) > 0;
+    }).map(function (item) {
+      return {
+        label: item.name,
+        options: item.scenariosIds.map(function (scenario) {
+          return {
+            value: scenario,
+            label: scenario
+          };
+        })
+      };
+    })) || [];
+    var vanillaScenarios = [{
+      label: 'Official Scenarios',
+      options: [{
+        value: '{90F086877C27B6F6}Missions/99_Tutorial.conf',
+        label: 'Tutorial'
+      }, {
+        value: '{ECC61978EDCC2B5A}Missions/23_Campaign.conf',
+        label: 'Campaign'
+      }, {
+        value: '{59AD59368755F41A}Missions/21_GM_Eden.conf',
+        label: 'Game Master - Eden'
+      }]
+    }];
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
       className: "block text-sm font-medium text-gray-700"
     }, "Scenario ID"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("select", {
-      name: "game.scenarioId",
-      value: formData.game.scenarioId,
-      onChange: handleChange,
+      name: "scenarioId",
+      defaultValue: gameBasicConfig.scenarioId,
+      onChange: handleGameBasicChange,
       className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
       value: ""
-    }, "Select a scenario..."), scenarios.map(function (group) {
+    }, "Select a scenario..."), [].concat(vanillaScenarios, _toConsumableArray(scenarios)).map(function (group) {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("optgroup", {
         key: group.label,
         label: group.label
@@ -529,11 +536,9 @@ function ServerConfigForm() {
         }, option.label);
       }));
     })));
-  });
-
-  // Platform selector section
-  var PlatformSection = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().memo(function () {
-    var hasMods = formData.game.mods && formData.game.mods.length > 0;
+  }, [workshopData, handleGameBasicChange, gameBasicConfig.scenarioId]);
+  var PlatformSection = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
+    var hasMods = mods.length > 0;
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
       className: "space-y-4"
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
@@ -553,7 +558,7 @@ function ServerConfigForm() {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(PlatformButton, {
         key: platform.id,
         platform: platform.id,
-        isSelected: formData.game.supportedPlatforms.includes(platform.id),
+        isSelected: supportedPlatforms.includes(platform.id),
         onClick: function onClick() {
           return handlePlatformChange(platform.id);
         },
@@ -562,7 +567,7 @@ function ServerConfigForm() {
     })), hasMods && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
       className: "text-sm text-yellow-600"
     }, "PlayStation support is disabled when mods are present."));
-  });
+  }, [supportedPlatforms, handlePlatformChange, mods]);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "p-6 bg-white rounded-lg shadow-lg"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("form", {
@@ -571,237 +576,157 @@ function ServerConfigForm() {
     title: "Network Configuration"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "grid grid-cols-2 gap-4"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Bind Address"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "text",
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Bind Address",
     name: "bindAddress",
-    value: formData.bindAddress,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Bind Port"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    defaultValue: networkConfig.bindAddress,
+    onChange: handleNetworkChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Bind Port",
     type: "number",
     name: "bindPort",
-    value: formData.bindPort,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Public Address"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "text",
+    defaultValue: networkConfig.bindPort,
+    onChange: handleNetworkChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Public Address",
     name: "publicAddress",
-    value: formData.publicAddress,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Public Port"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    defaultValue: networkConfig.publicAddress,
+    onChange: handleNetworkChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Public Port",
     type: "number",
     name: "publicPort",
-    value: formData.publicPort,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FormSection, {
+    defaultValue: networkConfig.publicPort,
+    onChange: handleNetworkChange
+  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FormSection, {
     title: "A2S Configuration"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "grid grid-cols-2 gap-4"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "A2S Address"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "text",
-    name: "a2s.address",
-    value: formData.a2s.address,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "A2S Port"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "A2S Address",
+    name: "address",
+    defaultValue: a2sConfig.address,
+    onChange: handleA2SChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "A2S Port",
     type: "number",
-    name: "a2s.port",
-    value: formData.a2s.port,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FormSection, {
+    name: "port",
+    defaultValue: a2sConfig.port,
+    onChange: handleA2SChange
+  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FormSection, {
     title: "Game Configuration"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "space-y-4"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Server Name"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "text",
-    name: "game.name",
-    value: formData.game.name,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Server Password"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Server Name",
+    name: "name",
+    defaultValue: gameBasicConfig.name,
+    onChange: handleGameBasicChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Server Password",
     type: "password",
-    name: "game.password",
-    value: formData.game.password,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Admin Password"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    name: "password",
+    defaultValue: gameBasicConfig.password,
+    onChange: handleGameBasicChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Admin Password",
     type: "password",
-    name: "game.passwordAdmin",
-    value: formData.game.passwordAdmin,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ScenarioSelection, null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Player Limit"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    name: "passwordAdmin",
+    defaultValue: gameBasicConfig.passwordAdmin,
+    onChange: handleGameBasicChange
+  }), ScenarioSelection, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Player Limit",
     type: "number",
-    name: "game.playerCountLimit",
-    value: formData.game.playerCountLimit,
-    onChange: handleChange,
+    name: "playerCountLimit",
+    defaultValue: gameBasicConfig.playerCountLimit,
+    onChange: handleGameBasicChange,
     min: "1",
-    max: "256",
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "flex items-center"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "checkbox",
-    name: "game.visible",
-    checked: formData.game.visible,
-    onChange: handleChange,
-    className: "text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
-    className: "ml-2 text-sm text-gray-600"
-  }, "Visible in server browser"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ModSelector, {
-    selectedMods: formData.game.mods,
-    onChange: function onChange(mods) {
-      setFormData(function (prevData) {
-        return _objectSpread(_objectSpread({}, prevData), {}, {
-          game: _objectSpread(_objectSpread({}, prevData.game), {}, {
-            mods: mods,
-            supportedPlatforms: mods.length > 0 ? prevData.game.supportedPlatforms.filter(function (p) {
-              return p !== "PLATFORM_PSN";
-            }) : prevData.game.supportedPlatforms
-          })
-        });
-      });
-    }
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(PlatformSection, null))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FormSection, {
+    max: "256"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigCheckbox, {
+    label: "Visible in server browser",
+    name: "visible",
+    defaultChecked: gameBasicConfig.visible,
+    onChange: handleGameBasicChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ModSelector, {
+    selectedMods: mods,
+    onChange: setMods
+  }), PlatformSection)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FormSection, {
     title: "Game Properties"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "grid grid-cols-2 gap-4"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Max View Distance"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Max View Distance",
     type: "number",
-    name: "game.gameProperties.serverMaxViewDistance",
-    value: formData.game.gameProperties.serverMaxViewDistance,
-    onChange: handleChange,
+    name: "serverMaxViewDistance",
+    defaultValue: gameProperties.serverMaxViewDistance,
+    onChange: handleGamePropertiesChange,
     min: "500",
-    max: "10000",
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Min Grass Distance"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    max: "10000"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Min Grass Distance",
     type: "number",
-    name: "game.gameProperties.serverMinGrassDistance",
-    value: formData.game.gameProperties.serverMinGrassDistance,
-    onChange: handleChange,
+    name: "serverMinGrassDistance",
+    defaultValue: gameProperties.serverMinGrassDistance,
+    onChange: handleGamePropertiesChange,
     min: "0",
-    max: "150",
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Network View Distance"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    max: "150"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Network View Distance",
     type: "number",
-    name: "game.gameProperties.networkViewDistance",
-    value: formData.game.gameProperties.networkViewDistance,
-    onChange: handleChange,
+    name: "networkViewDistance",
+    defaultValue: gameProperties.networkViewDistance,
+    onChange: handleGamePropertiesChange,
     min: "500",
-    max: "5000",
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    max: "5000"
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "grid grid-cols-2 gap-4 mt-4"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "flex items-center"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "checkbox",
-    name: "game.gameProperties.fastValidation",
-    checked: formData.game.gameProperties.fastValidation,
-    onChange: handleChange,
-    className: "text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
-    className: "ml-2 text-sm text-gray-600"
-  }, "Fast Validation"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "flex items-center"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "checkbox",
-    name: "game.gameProperties.battlEye",
-    checked: formData.game.gameProperties.battlEye,
-    onChange: handleChange,
-    className: "text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
-    className: "ml-2 text-sm text-gray-600"
-  }, "BattlEye"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "flex items-center"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "checkbox",
-    name: "game.gameProperties.disableThirdPerson",
-    checked: formData.game.gameProperties.disableThirdPerson,
-    onChange: handleChange,
-    className: "text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
-    className: "ml-2 text-sm text-gray-600"
-  }, "Disable Third Person"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "flex items-center"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "checkbox",
-    name: "game.gameProperties.VONDisableUI",
-    checked: formData.game.gameProperties.VONDisableUI,
-    onChange: handleChange,
-    className: "text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
-    className: "ml-2 text-sm text-gray-600"
-  }, "Disable VON UI"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "flex items-center"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "checkbox",
-    name: "game.gameProperties.VONDisableDirectSpeechUI",
-    checked: formData.game.gameProperties.VONDisableDirectSpeechUI,
-    onChange: handleChange,
-    className: "text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
-    className: "ml-2 text-sm text-gray-600"
-  }, "Disable Direct Speech UI"))))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FormSection, {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigCheckbox, {
+    label: "Fast Validation",
+    name: "fastValidation",
+    defaultChecked: gameProperties.fastValidation,
+    onChange: handleGamePropertiesChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigCheckbox, {
+    label: "BattlEye",
+    name: "battlEye",
+    defaultChecked: gameProperties.battlEye,
+    onChange: handleGamePropertiesChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigCheckbox, {
+    label: "Disable Third Person",
+    name: "disableThirdPerson",
+    defaultChecked: gameProperties.disableThirdPerson,
+    onChange: handleGamePropertiesChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigCheckbox, {
+    label: "Disable VON UI",
+    name: "VONDisableUI",
+    defaultChecked: gameProperties.VONDisableUI,
+    onChange: handleGamePropertiesChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigCheckbox, {
+    label: "Disable Direct Speech UI",
+    name: "VONDisableDirectSpeechUI",
+    defaultChecked: gameProperties.VONDisableDirectSpeechUI,
+    onChange: handleGamePropertiesChange
+  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FormSection, {
     title: "Operating"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "grid grid-cols-2 gap-4"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "Player Save Time"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "Player Save Time",
     type: "number",
-    name: "operating.playerSaveTime",
-    value: formData.operating.playerSaveTime,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "block text-sm font-medium text-gray-700"
-  }, "AI Limit"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+    name: "playerSaveTime",
+    defaultValue: operatingConfig.playerSaveTime,
+    onChange: handleOperatingChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigInput, {
+    label: "AI Limit",
     type: "number",
-    name: "operating.aiLimit",
-    value: formData.operating.aiLimit,
-    onChange: handleChange,
-    className: "block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
-    className: "flex items-center"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
-    type: "checkbox",
-    name: "operating.lobbyPlayerSynchronise",
-    checked: formData.operating.lobbyPlayerSynchronise,
-    onChange: handleChange,
-    className: "text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
-    className: "ml-2 text-sm text-gray-600"
-  }, "Lobby Player Synchronise"))))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    name: "aiLimit",
+    defaultValue: operatingConfig.aiLimit,
+    onChange: handleOperatingChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(ConfigCheckbox, {
+    label: "Lobby Player Synchronise",
+    name: "lobbyPlayerSynchronise",
+    defaultChecked: operatingConfig.lobbyPlayerSynchronise,
+    onChange: handleOperatingChange
+  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "flex justify-end mt-6"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
     type: "button",
@@ -1411,12 +1336,6 @@ video {
 .grid {
   display: grid;
 }
-.h-10 {
-  height: 2.5rem;
-}
-.h-12 {
-  height: 3rem;
-}
 .h-4 {
   height: 1rem;
 }
@@ -1444,15 +1363,6 @@ video {
 }
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-@keyframes pulse {
-
-  50% {
-    opacity: .5;
-  }
-}
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 .cursor-not-allowed {
   cursor: not-allowed;
@@ -1538,10 +1448,6 @@ video {
 .bg-gray-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1));
-}
-.bg-gray-200 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(229 231 235 / var(--tw-bg-opacity, 1));
 }
 .bg-gray-900 {
   --tw-bg-opacity: 1;
@@ -1712,7 +1618,7 @@ video {
 .focus\\:ring-offset-2:focus {
   --tw-ring-offset-width: 2px;
 }
-`, "",{"version":3,"sources":["webpack://./src/styles/index.css"],"names":[],"mappings":"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","sourcesContent":["@tailwind base;\r\n@tailwind components;\r\n@tailwind utilities;\r\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/styles/index.css"],"names":[],"mappings":"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","sourcesContent":["@tailwind base;\r\n@tailwind components;\r\n@tailwind utilities;\r\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

@@ -54,10 +54,47 @@ const LOCAL_WORKSHOP_DATA = {
   ]
 };
 
+const ConfigInput = React.memo(({ label, type = "text", name, defaultValue, onChange, ...props }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700">{label}</label>
+    <input
+      type={type}
+      name={name}
+      defaultValue={defaultValue}
+      onChange={onChange}
+      className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      {...props}
+    />
+  </div>
+));
+
+const ConfigCheckbox = React.memo(({ label, name, defaultChecked, onChange }) => (
+  <div>
+    <label className="flex items-center">
+      <input
+        type="checkbox"
+        name={name}
+        defaultChecked={defaultChecked}
+        onChange={onChange}
+        className="text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
+      />
+      <span className="ml-2 text-sm text-gray-600">{label}</span>
+    </label>
+  </div>
+));
+
+const FormSection = React.memo(({ title, children }) => (
+  <div className="mb-6">
+    <h3 className="mb-4 text-lg font-medium text-gray-900">{title}</h3>
+    <div className="space-y-4">
+      {children}
+    </div>
+  </div>
+));
+
 // Enhanced Mod Selector Component
 const ModSelector = React.memo(({ selectedMods = [], onChange }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [workshopData, setWorkshopData] = useState(LOCAL_WORKSHOP_DATA);
 
   useEffect(() => {
@@ -84,7 +121,7 @@ const ModSelector = React.memo(({ selectedMods = [], onChange }) => {
       }
     };
 
-    setTimeout(fetchWorkshopData, 100);
+    fetchWorkshopData();
   }, []);
 
   const filteredMods = useMemo(() => {
@@ -96,29 +133,11 @@ const ModSelector = React.memo(({ selectedMods = [], onChange }) => {
 
   const handleModSelect = useCallback((mod) => {
     const isSelected = selectedMods.some(selected => selected.modId === mod.id);
-    let newMods;
-    
-    if (isSelected) {
-      newMods = selectedMods.filter(selected => selected.modId !== mod.id);
-    } else {
-      newMods = [...selectedMods, { modId: mod.id, name: mod.name, version: "" }];
-    }
-    
+    let newMods = isSelected
+      ? selectedMods.filter(selected => selected.modId !== mod.id)
+      : [...selectedMods, { modId: mod.id, name: mod.name, version: "" }];
     onChange(newMods);
   }, [selectedMods, onChange]);
-
-  if (isLoading && !workshopData) {
-    return (
-      <div className="space-y-4">
-        <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-        <div className="space-y-2">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-12 bg-gray-200 rounded animate-pulse"></div>
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -135,62 +154,59 @@ const ModSelector = React.memo(({ selectedMods = [], onChange }) => {
         />
       </div>
 
-      <div className="space-y-2">
-        {selectedMods.length > 0 && (
-          <div className="mb-4">
-            <h4 className="mb-2 text-sm font-medium text-gray-700">Selected Mods:</h4>
-            <div className="space-y-2">
-              {selectedMods.map(mod => (
-                <div
-                  key={mod.modId}
-                  className="flex items-center justify-between px-3 py-2 rounded-md bg-blue-50"
+      {selectedMods.length > 0 && (
+        <div className="mb-4">
+          <h4 className="mb-2 text-sm font-medium text-gray-700">Selected Mods:</h4>
+          <div className="space-y-2">
+            {selectedMods.map(mod => (
+              <div
+                key={mod.modId}
+                className="flex items-center justify-between px-3 py-2 rounded-md bg-blue-50"
+              >
+                <span className="text-sm text-blue-700">{mod.name}</span>
+                <button
+                  onClick={() => handleModSelect({ id: mod.modId, name: mod.name })}
+                  className="p-1 rounded-full hover:bg-blue-100"
+                  type="button"
                 >
-                  <span className="text-sm text-blue-700">{mod.name}</span>
-                  <button
-                    onClick={() => handleModSelect({ id: mod.modId, name: mod.name })}
-                    className="p-1 rounded-full hover:bg-blue-100"
-                    type="button"
-                  >
-                    <CloseIcon />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="overflow-y-auto border border-gray-200 divide-y rounded-md max-h-96">
-          {filteredMods.map(mod => (
-            <div
-              key={mod.id}
-              className={`flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer ${
-                selectedMods.some(selected => selected.modId === mod.id)
-                  ? 'bg-blue-50'
-                  : ''
-              }`}
-              onClick={() => handleModSelect(mod)}
-              role="button"
-              tabIndex={0}
-            >
-              <div className="flex-1">
-                <h3 className="text-sm font-medium text-gray-900">{mod.name}</h3>
-                <p className="text-sm text-gray-500">ID: {mod.id}</p>
+                  <CloseIcon />
+                </button>
               </div>
-              <input
-                type="checkbox"
-                checked={selectedMods.some(selected => selected.modId === mod.id)}
-                onChange={() => handleModSelect(mod)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+      )}
+
+      <div className="overflow-y-auto border border-gray-200 divide-y rounded-md max-h-96">
+        {filteredMods.map(mod => (
+          <div
+            key={mod.id}
+            className={`flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer ${
+              selectedMods.some(selected => selected.modId === mod.id)
+                ? 'bg-blue-50'
+                : ''
+            }`}
+            onClick={() => handleModSelect(mod)}
+            role="button"
+            tabIndex={0}
+          >
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-gray-900">{mod.name}</h3>
+              <p className="text-sm text-gray-500">ID: {mod.id}</p>
+            </div>
+            <input
+              type="checkbox"
+              checked={selectedMods.some(selected => selected.modId === mod.id)}
+              onChange={() => handleModSelect(mod)}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
 });
 
-// Platform Button Component
 const PlatformButton = React.memo(({ platform, isSelected, onClick, disabled }) => {
   const platformNames = {
     "PLATFORM_PC": "PC",
@@ -216,73 +232,56 @@ const PlatformButton = React.memo(({ platform, isSelected, onClick, disabled }) 
   );
 });
 
-// Form Section Component
-const FormSection = React.memo(({ title, children }) => (
-  <div className="mb-6">
-    <h3 className="mb-4 text-lg font-medium text-gray-900">{title}</h3>
-    <div className="space-y-4">
-      {children}
-    </div>
-  </div>
-));
-
 function ServerConfigForm() {
-  const [formData, setFormData] = useState({
+  const [networkConfig, setNetworkConfig] = useState({
     bindAddress: '',
     bindPort: 2001,
     publicAddress: '',
     publicPort: 2001,
-    a2s: {
-      address: '',
-      port: 17777
-    },
-    operating: {
-      lobbyPlayerSynchronise: true,
-      playerSaveTime: 120,
-      aiLimit: -1
-    },
-    game: {
-      name: '',
-      password: '',
-      passwordAdmin: '',
-      scenarioId: '',
-      playerCountLimit: 32,
-      visible: true,
-      supportedPlatforms: ["PLATFORM_PC"],
-      gameProperties: {
-        serverMaxViewDistance: 1600,
-        serverMinGrassDistance: 0,
-        networkViewDistance: 1500,
-        disableThirdPerson: false,
-        fastValidation: true,
-        battlEye: true,
-        VONDisableUI: false,
-        VONDisableDirectSpeechUI: false,
-        missionHeader: {}
-      },
-      mods: []
-    }
   });
 
+  const [a2sConfig, setA2sConfig] = useState({
+    address: '',
+    port: 17777
+  });
+
+  const [gameBasicConfig, setGameBasicConfig] = useState({
+    name: '',
+    password: '',
+    passwordAdmin: '',
+    scenarioId: '',
+    playerCountLimit: 32,
+    visible: true,
+  });
+
+  const [gameProperties, setGameProperties] = useState({
+    serverMaxViewDistance: 1600,
+    serverMinGrassDistance: 0,
+    networkViewDistance: 1500,
+    disableThirdPerson: false,
+    fastValidation: true,
+    battlEye: true,
+    VONDisableUI: false,
+    VONDisableDirectSpeechUI: false,
+    missionHeader: {}
+  });
+
+  const [operatingConfig, setOperatingConfig] = useState({
+    lobbyPlayerSynchronise: true,
+    playerSaveTime: 120,
+    aiLimit: -1
+  });
+
+  const [supportedPlatforms, setSupportedPlatforms] = useState(["PLATFORM_PC"]);
+  const [mods, setMods] = useState([]);
   const [workshopData, setWorkshopData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchWorkshopData = async () => {
       try {
-        setIsLoading(true);
         const cachedData = localStorage.getItem('reforger-workshop-cache');
-        
         if (cachedData) {
-          const parsedData = JSON.parse(cachedData);
-          const cacheTime = localStorage.getItem('reforger-workshop-cache-time');
-          const cacheAge = Date.now() - parseInt(cacheTime || 0);
-          
-          if (cacheAge < 3600000) {
-            setWorkshopData(parsedData);
-            setIsLoading(false);
-            return;
-          }
+          setWorkshopData(JSON.parse(cachedData));
         }
         
         const response = await fetch('https://files.ofpisnotdead.com/reforger-workshop.json');
@@ -290,40 +289,42 @@ function ServerConfigForm() {
         
         const data = await response.json();
         localStorage.setItem('reforger-workshop-cache', JSON.stringify(data));
-        localStorage.setItem('reforger-workshop-cache-time', Date.now().toString());
         setWorkshopData(data);
       } catch (error) {
         console.error('Error fetching workshop data:', error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
-    setTimeout(fetchWorkshopData, 100);
+    fetchWorkshopData();
   }, []);
 
-  const handleChange = useCallback((event) => {
-    const { name, value, type, checked } = event.target;
-    const keys = name.split('.');
-    
-    setFormData(prevData => {
-      const newData = { ...prevData };
-      let current = newData;
-      
-      for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
-      }
-      
-      current[keys[keys.length - 1]] = type === 'checkbox' ? checked : 
-                                      type === 'number' ? Number(value) : 
-                                      value;
-      return newData;
-    });
-  }, []);
+  const createDebouncedHandler = (setter) => {
+    let timeoutId;
+    return (e) => {
+      const { name, value, type, checked } = e.target;
+      const finalValue = type === 'checkbox' ? checked : 
+                        type === 'number' ? Number(value) : 
+                        value;
+
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setter(prev => ({
+          ...prev,
+          [name]: finalValue
+        }));
+      }, 100);
+    };
+  };
+
+  const handleNetworkChange = createDebouncedHandler(setNetworkConfig);
+  const handleA2SChange = createDebouncedHandler(setA2sConfig);
+  const handleGameBasicChange = createDebouncedHandler(setGameBasicConfig);
+  const handleGamePropertiesChange = createDebouncedHandler(setGameProperties);
+  const handleOperatingChange = createDebouncedHandler(setOperatingConfig);
 
   const handlePlatformChange = useCallback((platform) => {
-    setFormData(prevData => {
-      let newPlatforms = [...prevData.game.supportedPlatforms];
+    setSupportedPlatforms(prev => {
+      let newPlatforms = [...prev];
       
       if (newPlatforms.includes(platform)) {
         newPlatforms = newPlatforms.filter(p => p !== platform);
@@ -335,21 +336,27 @@ function ServerConfigForm() {
         newPlatforms.push("PLATFORM_PC");
       }
 
-      if (platform === "PLATFORM_PSN" && prevData.game.mods.length > 0) {
+      if (platform === "PLATFORM_PSN" && mods.length > 0) {
         newPlatforms = newPlatforms.filter(p => p !== "PLATFORM_PSN");
       }
 
-      return {
-        ...prevData,
-        game: {
-          ...prevData.game,
-          supportedPlatforms: newPlatforms
-        }
-      };
+      return newPlatforms;
     });
-  }, []);
+  }, [mods]);
 
   const handleExport = useCallback(() => {
+    const formData = {
+      ...networkConfig,
+      a2s: a2sConfig,
+      operating: operatingConfig,
+      game: {
+        ...gameBasicConfig,
+        supportedPlatforms,
+        mods,
+        gameProperties
+      }
+    };
+
     const fileData = JSON.stringify(formData, null, 2);
     const blob = new Blob([fileData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -358,50 +365,41 @@ function ServerConfigForm() {
     link.href = url;
     link.click();
     URL.revokeObjectURL(url);
-  }, [formData]);
+  }, [networkConfig, a2sConfig, operatingConfig, gameBasicConfig, supportedPlatforms, mods, gameProperties]);
 
-  // Scenarios
-  const ScenarioSelection = React.memo(() => {
-    const scenarios = useMemo(() => {
-      if (!workshopData) return [];
+  const ScenarioSelection = useMemo(() => {
+    const scenarios = workshopData?.data
+      .filter(item => item.scenariosIds?.length > 0)
+      .map(item => ({
+        label: item.name,
+        options: item.scenariosIds.map(scenario => ({
+          value: scenario,
+          label: scenario
+        }))
+      })) || [];
 
-      const workshopScenarios = workshopData.data
-        .filter(item => item.scenariosIds?.length > 0)
-        .map(item => ({
-          label: item.name,
-          options: item.scenariosIds.map(scenario => ({
-            value: scenario,
-            label: scenario
-          }))
-        }));
-
-      const vanillaScenarios = [
-        {
-          label: 'Official Scenarios',
-          options: [
-            { value: '{90F086877C27B6F6}Missions/99_Tutorial.conf', label: 'Tutorial' },
-            { value: '{ECC61978EDCC2B5A}Missions/23_Campaign.conf', label: 'Campaign' },
-            { value: '{59AD59368755F41A}Missions/21_GM_Eden.conf', label: 'Game Master - Eden' }
-          ]
-        }
-      ];
-
-      return [...vanillaScenarios, ...workshopScenarios];
-    }, [workshopData]);
-
-    if (isLoading) return <div className="h-10 bg-gray-200 rounded animate-pulse"></div>;
+    const vanillaScenarios = [
+      {
+        label: 'Official Scenarios',
+        options: [
+          { value: '{90F086877C27B6F6}Missions/99_Tutorial.conf', label: 'Tutorial' },
+          { value: '{ECC61978EDCC2B5A}Missions/23_Campaign.conf', label: 'Campaign' },
+          { value: '{59AD59368755F41A}Missions/21_GM_Eden.conf', label: 'Game Master - Eden' }
+        ]
+      }
+    ];
 
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700">Scenario ID</label>
         <select
-          name="game.scenarioId"
-          value={formData.game.scenarioId}
-          onChange={handleChange}
+          name="scenarioId"
+          defaultValue={gameBasicConfig.scenarioId}
+          onChange={handleGameBasicChange}
           className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           <option value="">Select a scenario...</option>
-          {scenarios.map(group => (
+          {[...vanillaScenarios, ...scenarios].map(group => (
             <optgroup key={group.label} label={group.label}>
               {group.options.map(option => (
                 <option key={option.value} value={option.value}>
@@ -413,11 +411,10 @@ function ServerConfigForm() {
         </select>
       </div>
     );
-  });
+  }, [workshopData, handleGameBasicChange, gameBasicConfig.scenarioId]);
 
-  // Platform selector section
-  const PlatformSection = React.memo(() => {
-    const hasMods = formData.game.mods && formData.game.mods.length > 0;
+  const PlatformSection = useMemo(() => {
+    const hasMods = mods.length > 0;
     
     return (
       <div className="space-y-4">
@@ -431,7 +428,7 @@ function ServerConfigForm() {
             <PlatformButton
               key={platform.id}
               platform={platform.id}
-              isSelected={formData.game.supportedPlatforms.includes(platform.id)}
+              isSelected={supportedPlatforms.includes(platform.id)}
               onClick={() => handlePlatformChange(platform.id)}
               disabled={platform.id === "PLATFORM_PC" || (platform.id === "PLATFORM_PSN" && hasMods)}
             />
@@ -444,306 +441,193 @@ function ServerConfigForm() {
         )}
       </div>
     );
-  });
+  }, [supportedPlatforms, handlePlatformChange, mods]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
       <form className="space-y-6">
-        {/* Network Configuration section */}
         <FormSection title="Network Configuration">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Bind Address</label>
-              <input
-                type="text"
-                name="bindAddress"
-                value={formData.bindAddress}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Bind Port</label>
-              <input
-                type="number"
-                name="bindPort"
-                value={formData.bindPort}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Public Address</label>
-              <input
-                type="text"
-                name="publicAddress"
-                value={formData.publicAddress}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Public Port</label>
-              <input
-                type="number"
-                name="publicPort"
-                value={formData.publicPort}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+            <ConfigInput
+              label="Bind Address"
+              name="bindAddress"
+              defaultValue={networkConfig.bindAddress}
+              onChange={handleNetworkChange}
+            />
+            <ConfigInput
+              label="Bind Port"
+              type="number"
+              name="bindPort"
+              defaultValue={networkConfig.bindPort}
+              onChange={handleNetworkChange}
+            />
+            <ConfigInput
+              label="Public Address"
+              name="publicAddress"
+              defaultValue={networkConfig.publicAddress}
+              onChange={handleNetworkChange}
+            />
+            <ConfigInput
+              label="Public Port"
+              type="number"
+              name="publicPort"
+              defaultValue={networkConfig.publicPort}
+              onChange={handleNetworkChange}
+            />
           </div>
         </FormSection>
 
-        {/* A2S Configuration section */}
         <FormSection title="A2S Configuration">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">A2S Address</label>
-              <input
-                type="text"
-                name="a2s.address"
-                value={formData.a2s.address}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">A2S Port</label>
-              <input
-                type="number"
-                name="a2s.port"
-                value={formData.a2s.port}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+            <ConfigInput
+              label="A2S Address"
+              name="address"
+              defaultValue={a2sConfig.address}
+              onChange={handleA2SChange}
+            />
+            <ConfigInput
+              label="A2S Port"
+              type="number"
+              name="port"
+              defaultValue={a2sConfig.port}
+              onChange={handleA2SChange}
+            />
           </div>
         </FormSection>
 
-        {/* Game Configuration section */}
         <FormSection title="Game Configuration">
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Server Name</label>
-              <input
-                type="text"
-                name="game.name"
-                value={formData.game.name}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Server Password</label>
-              <input
-                type="password"
-                name="game.password"
-                value={formData.game.password}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Admin Password</label>
-              <input
-                type="password"
-                name="game.passwordAdmin"
-                value={formData.game.passwordAdmin}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            <ScenarioSelection />
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Player Limit</label>
-              <input
-                type="number"
-                name="game.playerCountLimit"
-                value={formData.game.playerCountLimit}
-                onChange={handleChange}
-                min="1"
-                max="256"
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="game.visible"
-                  checked={formData.game.visible}
-                  onChange={handleChange}
-                  className="text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-600">Visible in server browser</span>
-              </label>
-            </div>
-
-            <ModSelector 
-              selectedMods={formData.game.mods}
-              onChange={(mods) => {
-                setFormData(prevData => ({
-                  ...prevData,
-                  game: {
-                    ...prevData.game,
-                    mods,
-                    supportedPlatforms: mods.length > 0 
-                      ? prevData.game.supportedPlatforms.filter(p => p !== "PLATFORM_PSN")
-                      : prevData.game.supportedPlatforms
-                  }
-                }));
-              }}
+            <ConfigInput
+              label="Server Name"
+              name="name"
+              defaultValue={gameBasicConfig.name}
+              onChange={handleGameBasicChange}
             />
-            <PlatformSection />
+            <ConfigInput
+              label="Server Password"
+              type="password"
+              name="password"
+              defaultValue={gameBasicConfig.password}
+              onChange={handleGameBasicChange}
+            />
+            <ConfigInput
+              label="Admin Password"
+              type="password"
+              name="passwordAdmin"
+              defaultValue={gameBasicConfig.passwordAdmin}
+              onChange={handleGameBasicChange}
+            />
+            {ScenarioSelection}
+            <ConfigInput
+              label="Player Limit"
+              type="number"
+              name="playerCountLimit"
+              defaultValue={gameBasicConfig.playerCountLimit}
+              onChange={handleGameBasicChange}
+              min="1"
+              max="256"
+            />
+            <ConfigCheckbox
+              label="Visible in server browser"
+              name="visible"
+              defaultChecked={gameBasicConfig.visible}
+              onChange={handleGameBasicChange}
+            />
+            <ModSelector 
+              selectedMods={mods}
+              onChange={setMods}
+            />
+            {PlatformSection}
           </div>
         </FormSection>
 
-        {/* Game Properties section */}
         <FormSection title="Game Properties">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Max View Distance</label>
-              <input
-                type="number"
-                name="game.gameProperties.serverMaxViewDistance"
-                value={formData.game.gameProperties.serverMaxViewDistance}
-                onChange={handleChange}
-                min="500"
-                max="10000"
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Min Grass Distance</label>
-              <input
-                type="number"
-                name="game.gameProperties.serverMinGrassDistance"
-                value={formData.game.gameProperties.serverMinGrassDistance}
-                onChange={handleChange}
-                min="0"
-                max="150"
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Network View Distance</label>
-              <input
-                type="number"
-                name="game.gameProperties.networkViewDistance"
-                value={formData.game.gameProperties.networkViewDistance}
-                onChange={handleChange}
-                min="500"
-                max="5000"
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+            <ConfigInput
+              label="Max View Distance"
+              type="number"
+              name="serverMaxViewDistance"
+              defaultValue={gameProperties.serverMaxViewDistance}
+              onChange={handleGamePropertiesChange}
+              min="500"
+              max="10000"
+            />
+            <ConfigInput
+              label="Min Grass Distance"
+              type="number"
+              name="serverMinGrassDistance"
+              defaultValue={gameProperties.serverMinGrassDistance}
+              onChange={handleGamePropertiesChange}
+              min="0"
+              max="150"
+            />
+            <ConfigInput
+              label="Network View Distance"
+              type="number"
+              name="networkViewDistance"
+              defaultValue={gameProperties.networkViewDistance}
+              onChange={handleGamePropertiesChange}
+              min="500"
+              max="5000"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="game.gameProperties.fastValidation"
-                  checked={formData.game.gameProperties.fastValidation}
-                  onChange={handleChange}
-                  className="text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-600">Fast Validation</span>
-              </label>
-            </div>
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="game.gameProperties.battlEye"
-                  checked={formData.game.gameProperties.battlEye}
-                  onChange={handleChange}
-                  className="text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-600">BattlEye</span>
-              </label>
-            </div>
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="game.gameProperties.disableThirdPerson"
-                  checked={formData.game.gameProperties.disableThirdPerson}
-                  onChange={handleChange}
-                  className="text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-600">Disable Third Person</span>
-              </label>
-            </div>
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="game.gameProperties.VONDisableUI"
-                  checked={formData.game.gameProperties.VONDisableUI}
-                  onChange={handleChange}
-                  className="text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-600">Disable VON UI</span>
-              </label>
-            </div>
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="game.gameProperties.VONDisableDirectSpeechUI"
-                  checked={formData.game.gameProperties.VONDisableDirectSpeechUI}
-                  onChange={handleChange}
-                  className="text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-600">Disable Direct Speech UI</span>
-              </label>
-            </div>
+            <ConfigCheckbox
+              label="Fast Validation"
+              name="fastValidation"
+              defaultChecked={gameProperties.fastValidation}
+              onChange={handleGamePropertiesChange}
+            />
+            <ConfigCheckbox
+              label="BattlEye"
+              name="battlEye"
+              defaultChecked={gameProperties.battlEye}
+              onChange={handleGamePropertiesChange}
+            />
+            <ConfigCheckbox
+              label="Disable Third Person"
+              name="disableThirdPerson"
+              defaultChecked={gameProperties.disableThirdPerson}
+              onChange={handleGamePropertiesChange}
+            />
+            <ConfigCheckbox
+              label="Disable VON UI"
+              name="VONDisableUI"
+              defaultChecked={gameProperties.VONDisableUI}
+              onChange={handleGamePropertiesChange}
+            />
+            <ConfigCheckbox
+              label="Disable Direct Speech UI"
+              name="VONDisableDirectSpeechUI"
+              defaultChecked={gameProperties.VONDisableDirectSpeechUI}
+              onChange={handleGamePropertiesChange}
+            />
           </div>
         </FormSection>
 
-        {/* Operating section */}
         <FormSection title="Operating">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Player Save Time</label>
-              <input
-                type="number"
-                name="operating.playerSaveTime"
-                value={formData.operating.playerSaveTime}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">AI Limit</label>
-              <input
-                type="number"
-                name="operating.aiLimit"
-                value={formData.operating.aiLimit}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="operating.lobbyPlayerSynchronise"
-                  checked={formData.operating.lobbyPlayerSynchronise}
-                  onChange={handleChange}
-                  className="text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-sm text-gray-600">Lobby Player Synchronise</span>
-              </label>
-            </div>
+            <ConfigInput
+              label="Player Save Time"
+              type="number"
+              name="playerSaveTime"
+              defaultValue={operatingConfig.playerSaveTime}
+              onChange={handleOperatingChange}
+            />
+            <ConfigInput
+              label="AI Limit"
+              type="number"
+              name="aiLimit"
+              defaultValue={operatingConfig.aiLimit}
+              onChange={handleOperatingChange}
+            />
+            <ConfigCheckbox
+              label="Lobby Player Synchronise"
+              name="lobbyPlayerSynchronise"
+              defaultChecked={operatingConfig.lobbyPlayerSynchronise}
+              onChange={handleOperatingChange}
+            />
           </div>
         </FormSection>
 
