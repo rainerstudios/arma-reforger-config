@@ -1,7 +1,197 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
-// Platform selector component kept from original
-const PlatformButton = ({ platform, isSelected, onClick, disabled }) => {
+// Icons as components
+const SearchIcon = () => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+    className="w-4 h-4 text-gray-400"
+  >
+    <circle cx="11" cy="11" r="8"></circle>
+    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+    className="w-4 h-4 text-blue-700"
+  >
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+);
+
+// Sample local data for instant loading
+const LOCAL_WORKSHOP_DATA = {
+  "data": [
+    {
+      "id": "59727DAE364DEADB",
+      "name": "WeaponSwitching",
+      "scenariosIds": []
+    },
+    {
+      "id": "59727DAE32981C7D",
+      "name": "Enhanced Combat",
+      "scenariosIds": []
+    },
+    {
+      "id": "597146C56DF0866B",
+      "name": "Better Grass",
+      "scenariosIds": []
+    }
+  ]
+};
+
+// Enhanced Mod Selector Component
+const ModSelector = React.memo(({ selectedMods = [], onChange }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [workshopData, setWorkshopData] = useState(LOCAL_WORKSHOP_DATA);
+
+  useEffect(() => {
+    const fetchWorkshopData = async () => {
+      try {
+        const cachedData = localStorage.getItem('reforger-workshop-cache');
+        const cacheTime = localStorage.getItem('reforger-workshop-cache-time');
+        const cacheAge = Date.now() - parseInt(cacheTime || 0);
+        
+        if (cachedData && cacheAge < 3600000) {
+          setWorkshopData(JSON.parse(cachedData));
+          return;
+        }
+
+        const response = await fetch('https://files.ofpisnotdead.com/reforger-workshop.json');
+        if (!response.ok) throw new Error('Failed to fetch workshop data');
+        
+        const data = await response.json();
+        localStorage.setItem('reforger-workshop-cache', JSON.stringify(data));
+        localStorage.setItem('reforger-workshop-cache-time', Date.now().toString());
+        setWorkshopData(data);
+      } catch (error) {
+        console.error('Error fetching workshop data:', error);
+      }
+    };
+
+    setTimeout(fetchWorkshopData, 100);
+  }, []);
+
+  const filteredMods = useMemo(() => {
+    if (!workshopData?.data) return [];
+    return workshopData.data.filter(mod =>
+      mod.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [workshopData, searchTerm]);
+
+  const handleModSelect = useCallback((mod) => {
+    const isSelected = selectedMods.some(selected => selected.modId === mod.id);
+    let newMods;
+    
+    if (isSelected) {
+      newMods = selectedMods.filter(selected => selected.modId !== mod.id);
+    } else {
+      newMods = [...selectedMods, { modId: mod.id, name: mod.name, version: "" }];
+    }
+    
+    onChange(newMods);
+  }, [selectedMods, onChange]);
+
+  if (isLoading && !workshopData) {
+    return (
+      <div className="space-y-4">
+        <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+        <div className="space-y-2">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-12 bg-gray-200 rounded animate-pulse"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="relative">
+        <div className="absolute transform -translate-y-1/2 left-3 top-1/2">
+          <SearchIcon />
+        </div>
+        <input
+          type="text"
+          placeholder="Search mods..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+
+      <div className="space-y-2">
+        {selectedMods.length > 0 && (
+          <div className="mb-4">
+            <h4 className="mb-2 text-sm font-medium text-gray-700">Selected Mods:</h4>
+            <div className="space-y-2">
+              {selectedMods.map(mod => (
+                <div
+                  key={mod.modId}
+                  className="flex items-center justify-between px-3 py-2 rounded-md bg-blue-50"
+                >
+                  <span className="text-sm text-blue-700">{mod.name}</span>
+                  <button
+                    onClick={() => handleModSelect({ id: mod.modId, name: mod.name })}
+                    className="p-1 rounded-full hover:bg-blue-100"
+                    type="button"
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="overflow-y-auto border border-gray-200 divide-y rounded-md max-h-96">
+          {filteredMods.map(mod => (
+            <div
+              key={mod.id}
+              className={`flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer ${
+                selectedMods.some(selected => selected.modId === mod.id)
+                  ? 'bg-blue-50'
+                  : ''
+              }`}
+              onClick={() => handleModSelect(mod)}
+              role="button"
+              tabIndex={0}
+            >
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-gray-900">{mod.name}</h3>
+                <p className="text-sm text-gray-500">ID: {mod.id}</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={selectedMods.some(selected => selected.modId === mod.id)}
+                onChange={() => handleModSelect(mod)}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// Platform Button Component
+const PlatformButton = React.memo(({ platform, isSelected, onClick, disabled }) => {
   const platformNames = {
     "PLATFORM_PC": "PC",
     "PLATFORM_XBL": "Xbox", 
@@ -24,36 +214,19 @@ const PlatformButton = ({ platform, isSelected, onClick, disabled }) => {
       {platformNames[platform]}
     </button>
   );
-};
+});
+
+// Form Section Component
+const FormSection = React.memo(({ title, children }) => (
+  <div className="mb-6">
+    <h3 className="mb-4 text-lg font-medium text-gray-900">{title}</h3>
+    <div className="space-y-4">
+      {children}
+    </div>
+  </div>
+));
 
 function ServerConfigForm() {
-  const [workshopData, setWorkshopData] = useState(null);
-  
-  // Workshop data fetching
-  const getWorkshopData = async () => {
-    try {
-      let data = JSON.parse(localStorage.getItem('reforger-workshop-cache'));
-
-      if (data === null) {
-        console.log('New API request to workshop');
-        const response = await fetch('https://files.ofpisnotdead.com/reforger-workshop.json');
-        data = await response.json();
-        localStorage.setItem('reforger-workshop-cache', JSON.stringify(data));
-      }
-      
-      return data;
-    } catch (error) {
-      console.error('Error fetching workshop data:', error);
-      return null;
-    }
-  };
-
-  useEffect(() => {
-    getWorkshopData().then(data => {
-      setWorkshopData(data);
-    });
-  }, []);
-
   const [formData, setFormData] = useState({
     bindAddress: '',
     bindPort: 2001,
@@ -91,12 +264,50 @@ function ServerConfigForm() {
     }
   });
 
-  const handleChange = (event) => {
+  const [workshopData, setWorkshopData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchWorkshopData = async () => {
+      try {
+        setIsLoading(true);
+        const cachedData = localStorage.getItem('reforger-workshop-cache');
+        
+        if (cachedData) {
+          const parsedData = JSON.parse(cachedData);
+          const cacheTime = localStorage.getItem('reforger-workshop-cache-time');
+          const cacheAge = Date.now() - parseInt(cacheTime || 0);
+          
+          if (cacheAge < 3600000) {
+            setWorkshopData(parsedData);
+            setIsLoading(false);
+            return;
+          }
+        }
+        
+        const response = await fetch('https://files.ofpisnotdead.com/reforger-workshop.json');
+        if (!response.ok) throw new Error('Failed to fetch workshop data');
+        
+        const data = await response.json();
+        localStorage.setItem('reforger-workshop-cache', JSON.stringify(data));
+        localStorage.setItem('reforger-workshop-cache-time', Date.now().toString());
+        setWorkshopData(data);
+      } catch (error) {
+        console.error('Error fetching workshop data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    setTimeout(fetchWorkshopData, 100);
+  }, []);
+
+  const handleChange = useCallback((event) => {
     const { name, value, type, checked } = event.target;
     const keys = name.split('.');
     
     setFormData(prevData => {
-      let newData = { ...prevData };
+      const newData = { ...prevData };
       let current = newData;
       
       for (let i = 0; i < keys.length - 1; i++) {
@@ -108,33 +319,9 @@ function ServerConfigForm() {
                                       value;
       return newData;
     });
-  };
+  }, []);
 
-  const handleModChange = (mods) => {
-    setFormData(prevData => {
-      const newData = {
-        ...prevData,
-        game: {
-          ...prevData.game,
-          mods: mods.map(mod => ({
-            modId: mod.value,
-            name: mod.label,
-            version: ""
-          }))
-        }
-      };
-
-      if (mods.length > 0) {
-        newData.game.supportedPlatforms = newData.game.supportedPlatforms.filter(
-          platform => platform !== "PLATFORM_PSN"
-        );
-      }
-
-      return newData;
-    });
-  };
-
-  const handlePlatformChange = (platform) => {
+  const handlePlatformChange = useCallback((platform) => {
     setFormData(prevData => {
       let newPlatforms = [...prevData.game.supportedPlatforms];
       
@@ -160,107 +347,49 @@ function ServerConfigForm() {
         }
       };
     });
-  };
+  }, []);
 
-  const handleExport = () => {
+  const handleExport = useCallback(() => {
     const fileData = JSON.stringify(formData, null, 2);
     const blob = new Blob([fileData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.download = `arma_server_config.json`;
+    link.download = "arma_server_config.json";
     link.href = url;
     link.click();
     URL.revokeObjectURL(url);
-  };
+  }, [formData]);
 
-  const FormSection = ({ title, children }) => (
-    <div className="mb-6">
-      <h3 className="mb-4 text-lg font-medium text-gray-900">{title}</h3>
-      <div className="space-y-4">
-        {children}
-      </div>
-    </div>
-  );
+  // Scenarios
+  const ScenarioSelection = React.memo(() => {
+    const scenarios = useMemo(() => {
+      if (!workshopData) return [];
 
-  // Dynamic Mod Selection component
-  const ModSelection = () => {
-    if (!workshopData) return <div>Loading mods...</div>;
+      const workshopScenarios = workshopData.data
+        .filter(item => item.scenariosIds?.length > 0)
+        .map(item => ({
+          label: item.name,
+          options: item.scenariosIds.map(scenario => ({
+            value: scenario,
+            label: scenario
+          }))
+        }));
 
-    return (
-      <div>
-        <label className="block mb-2 text-sm font-medium text-gray-700">Mods</label>
-        <select
-          multiple
-          name="game.mods"
-          className="block w-full py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          value={formData.game.mods.map(mod => mod.modId)}
-          onChange={(e) => {
-            const options = [...e.target.selectedOptions];
-            const selectedMods = options.map(option => ({
-              value: option.value,
-              label: option.text
-            }));
-            handleModChange(selectedMods);
-          }}
-        >
-          {workshopData.data.map(mod => (
-            <option key={mod.id} value={mod.id}>
-              {mod.name}
-            </option>
-          ))}
-        </select>
-        <p className="mt-2 text-sm text-gray-500">
-          Hold Ctrl (Windows) or Command (Mac) to select multiple mods
-        </p>
-        {formData.game.mods.length > 0 && (
-          <div className="mt-4">
-            <h4 className="text-sm font-medium text-gray-700">Selected Mods:</h4>
-            <ul className="mt-2 space-y-2">
-              {formData.game.mods.map(mod => (
-                <li key={mod.modId} className="text-sm text-gray-600">
-                  {mod.name} ({mod.modId})
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    );
-  };
+      const vanillaScenarios = [
+        {
+          label: 'Official Scenarios',
+          options: [
+            { value: '{90F086877C27B6F6}Missions/99_Tutorial.conf', label: 'Tutorial' },
+            { value: '{ECC61978EDCC2B5A}Missions/23_Campaign.conf', label: 'Campaign' },
+            { value: '{59AD59368755F41A}Missions/21_GM_Eden.conf', label: 'Game Master - Eden' }
+          ]
+        }
+      ];
 
-  // Dynamic Scenario Selection component
-  const ScenarioSelection = () => {
-    if (!workshopData) return <div>Loading scenarios...</div>;
+      return [...vanillaScenarios, ...workshopScenarios];
+    }, [workshopData]);
 
-    const scenarios = workshopData.data
-      .filter(item => item.scenariosIds && item.scenariosIds.length > 0)
-      .map(item => ({
-        label: item.name,
-        options: item.scenariosIds.map(scenario => ({
-          value: scenario,
-          label: scenario
-        }))
-      }));
-
-    const vanillaScenarios = [
-      {
-        value: '{90F086877C27B6F6}Missions/99_Tutorial.conf',
-        label: 'Tutorial'
-      },
-      {
-        value: '{ECC61978EDCC2B5A}Missions/23_Campaign.conf',
-        label: 'Campaign'
-      },
-      {
-        value: '{59AD59368755F41A}Missions/21_GM_Eden.conf',
-        label: 'Game Master - Eden'
-      }
-    ];
-
-    scenarios.unshift({
-      label: 'Official Scenarios',
-      options: vanillaScenarios
-    });
+    if (isLoading) return <div className="h-10 bg-gray-200 rounded animate-pulse"></div>;
 
     return (
       <div>
@@ -284,10 +413,10 @@ function ServerConfigForm() {
         </select>
       </div>
     );
-  };
+  });
 
   // Platform selector section
-  const PlatformSection = () => {
+  const PlatformSection = React.memo(() => {
     const hasMods = formData.game.mods && formData.game.mods.length > 0;
     
     return (
@@ -315,7 +444,7 @@ function ServerConfigForm() {
         )}
       </div>
     );
-  };
+  });
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
@@ -395,7 +524,7 @@ function ServerConfigForm() {
         {/* Game Configuration section */}
         <FormSection title="Game Configuration">
           <div className="space-y-4">
-          <div>
+            <div>
               <label className="block text-sm font-medium text-gray-700">Server Name</label>
               <input
                 type="text"
@@ -405,7 +534,6 @@ function ServerConfigForm() {
                 className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
-
 
             <div>
               <label className="block text-sm font-medium text-gray-700">Server Password</label>
@@ -417,6 +545,7 @@ function ServerConfigForm() {
                 className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Admin Password</label>
               <input
@@ -427,7 +556,9 @@ function ServerConfigForm() {
                 className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
+
             <ScenarioSelection />
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Player Limit</label>
               <input
@@ -440,6 +571,7 @@ function ServerConfigForm() {
                 className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
+
             <div>
               <label className="flex items-center">
                 <input
@@ -452,7 +584,22 @@ function ServerConfigForm() {
                 <span className="ml-2 text-sm text-gray-600">Visible in server browser</span>
               </label>
             </div>
-            <ModSelection />
+
+            <ModSelector 
+              selectedMods={formData.game.mods}
+              onChange={(mods) => {
+                setFormData(prevData => ({
+                  ...prevData,
+                  game: {
+                    ...prevData.game,
+                    mods,
+                    supportedPlatforms: mods.length > 0 
+                      ? prevData.game.supportedPlatforms.filter(p => p !== "PLATFORM_PSN")
+                      : prevData.game.supportedPlatforms
+                  }
+                }));
+              }}
+            />
             <PlatformSection />
           </div>
         </FormSection>
