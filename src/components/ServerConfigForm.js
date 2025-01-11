@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-// Platform selector component inlined
+// Platform selector component kept from original
 const PlatformButton = ({ platform, isSelected, onClick, disabled }) => {
   const platformNames = {
     "PLATFORM_PC": "PC",
-    "PLATFORM_XBL": "Xbox",
+    "PLATFORM_XBL": "Xbox", 
     "PLATFORM_PSN": "PlayStation"
   };
 
@@ -27,6 +27,33 @@ const PlatformButton = ({ platform, isSelected, onClick, disabled }) => {
 };
 
 function ServerConfigForm() {
+  const [workshopData, setWorkshopData] = useState(null);
+  
+  // Workshop data fetching
+  const getWorkshopData = async () => {
+    try {
+      let data = JSON.parse(localStorage.getItem('reforger-workshop-cache'));
+
+      if (data === null) {
+        console.log('New API request to workshop');
+        const response = await fetch('https://files.ofpisnotdead.com/reforger-workshop.json');
+        data = await response.json();
+        localStorage.setItem('reforger-workshop-cache', JSON.stringify(data));
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Error fetching workshop data:', error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    getWorkshopData().then(data => {
+      setWorkshopData(data);
+    });
+  }, []);
+
   const [formData, setFormData] = useState({
     bindAddress: '',
     bindPort: 2001,
@@ -82,30 +109,30 @@ function ServerConfigForm() {
       return newData;
     });
   };
-    // Add mod change
-    const handleModChange = (mods) => {
-        setFormData(prevData => {
-          const newData = {
-            ...prevData,
-            game: {
-              ...prevData.game,
-              mods: mods.map(mod => ({
-                modId: mod.value,
-                name: mod.label,
-                version: ""
-              }))
-            }
-          };
-    
-          if (mods.length > 0) {
-            newData.game.supportedPlatforms = newData.game.supportedPlatforms.filter(
-              platform => platform !== "PLATFORM_PSN"
-            );
-          }
-    
-          return newData;
-        });
+
+  const handleModChange = (mods) => {
+    setFormData(prevData => {
+      const newData = {
+        ...prevData,
+        game: {
+          ...prevData.game,
+          mods: mods.map(mod => ({
+            modId: mod.value,
+            name: mod.label,
+            version: ""
+          }))
+        }
       };
+
+      if (mods.length > 0) {
+        newData.game.supportedPlatforms = newData.game.supportedPlatforms.filter(
+          platform => platform !== "PLATFORM_PSN"
+        );
+      }
+
+      return newData;
+    });
+  };
 
   const handlePlatformChange = (platform) => {
     setFormData(prevData => {
@@ -121,7 +148,6 @@ function ServerConfigForm() {
         newPlatforms.push("PLATFORM_PC");
       }
 
-      // Remove PS5 if mods are present
       if (platform === "PLATFORM_PSN" && prevData.game.mods.length > 0) {
         newPlatforms = newPlatforms.filter(p => p !== "PLATFORM_PSN");
       }
@@ -155,8 +181,110 @@ function ServerConfigForm() {
       </div>
     </div>
   );
-  
-  
+
+  // Dynamic Mod Selection component
+  const ModSelection = () => {
+    if (!workshopData) return <div>Loading mods...</div>;
+
+    return (
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-700">Mods</label>
+        <select
+          multiple
+          name="game.mods"
+          className="block w-full py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          value={formData.game.mods.map(mod => mod.modId)}
+          onChange={(e) => {
+            const options = [...e.target.selectedOptions];
+            const selectedMods = options.map(option => ({
+              value: option.value,
+              label: option.text
+            }));
+            handleModChange(selectedMods);
+          }}
+        >
+          {workshopData.data.map(mod => (
+            <option key={mod.id} value={mod.id}>
+              {mod.name}
+            </option>
+          ))}
+        </select>
+        <p className="mt-2 text-sm text-gray-500">
+          Hold Ctrl (Windows) or Command (Mac) to select multiple mods
+        </p>
+        {formData.game.mods.length > 0 && (
+          <div className="mt-4">
+            <h4 className="text-sm font-medium text-gray-700">Selected Mods:</h4>
+            <ul className="mt-2 space-y-2">
+              {formData.game.mods.map(mod => (
+                <li key={mod.modId} className="text-sm text-gray-600">
+                  {mod.name} ({mod.modId})
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Dynamic Scenario Selection component
+  const ScenarioSelection = () => {
+    if (!workshopData) return <div>Loading scenarios...</div>;
+
+    const scenarios = workshopData.data
+      .filter(item => item.scenariosIds && item.scenariosIds.length > 0)
+      .map(item => ({
+        label: item.name,
+        options: item.scenariosIds.map(scenario => ({
+          value: scenario,
+          label: scenario
+        }))
+      }));
+
+    const vanillaScenarios = [
+      {
+        value: '{90F086877C27B6F6}Missions/99_Tutorial.conf',
+        label: 'Tutorial'
+      },
+      {
+        value: '{ECC61978EDCC2B5A}Missions/23_Campaign.conf',
+        label: 'Campaign'
+      },
+      {
+        value: '{59AD59368755F41A}Missions/21_GM_Eden.conf',
+        label: 'Game Master - Eden'
+      }
+    ];
+
+    scenarios.unshift({
+      label: 'Official Scenarios',
+      options: vanillaScenarios
+    });
+
+    return (
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Scenario ID</label>
+        <select
+          name="game.scenarioId"
+          value={formData.game.scenarioId}
+          onChange={handleChange}
+          className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="">Select a scenario...</option>
+          {scenarios.map(group => (
+            <optgroup key={group.label} label={group.label}>
+              {group.options.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      </div>
+    );
+  };
 
   // Platform selector section
   const PlatformSection = () => {
@@ -192,6 +320,7 @@ function ServerConfigForm() {
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
       <form className="space-y-6">
+        {/* Network Configuration section */}
         <FormSection title="Network Configuration">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -237,6 +366,7 @@ function ServerConfigForm() {
           </div>
         </FormSection>
 
+        {/* A2S Configuration section */}
         <FormSection title="A2S Configuration">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -262,9 +392,10 @@ function ServerConfigForm() {
           </div>
         </FormSection>
 
+        {/* Game Configuration section */}
         <FormSection title="Game Configuration">
           <div className="space-y-4">
-            <div>
+          <div>
               <label className="block text-sm font-medium text-gray-700">Server Name</label>
               <input
                 type="text"
@@ -274,6 +405,8 @@ function ServerConfigForm() {
                 className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
+
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Server Password</label>
               <input
@@ -294,16 +427,7 @@ function ServerConfigForm() {
                 className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Scenario ID</label>
-              <input
-                type="text"
-                name="game.scenarioId"
-                value={formData.game.scenarioId}
-                onChange={handleChange}
-                className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
+            <ScenarioSelection />
             <div>
               <label className="block text-sm font-medium text-gray-700">Player Limit</label>
               <input
@@ -328,47 +452,12 @@ function ServerConfigForm() {
                 <span className="ml-2 text-sm text-gray-600">Visible in server browser</span>
               </label>
             </div>
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">Mods</label>
-              <select
-                multiple
-                name="game.mods"
-                className="block w-full py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                value={formData.game.mods.map(mod => mod.modId)}
-                onChange={(e) => {
-                  const options = [...e.target.selectedOptions];
-                  const selectedMods = options.map(option => ({
-                    value: option.value,
-                    label: option.text
-                  }));
-                  handleModChange(selectedMods);
-                }}
-              >
-                <option value="59727DAE364DEADB">WeaponSwitching</option>
-                <option value="59727DAE32981C7D">Explosive Goats beta</option>
-                <option value="5972ABCD12345678">Example Mod 1</option>
-                <option value="5972EFGH87654321">Example Mod 2</option>
-              </select>
-              <p className="mt-2 text-sm text-gray-500">
-                Hold Ctrl (Windows) or Command (Mac) to select multiple mods
-              </p>
-              {formData.game.mods.length > 0 && (
-                <div className="mt-4">
-                  <h4 className="text-sm font-medium text-gray-700">Selected Mods:</h4>
-                  <ul className="mt-2 space-y-2">
-                    {formData.game.mods.map(mod => (
-                      <li key={mod.modId} className="text-sm text-gray-600">
-                        {mod.name} ({mod.modId})
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+            <ModSelection />
             <PlatformSection />
           </div>
         </FormSection>
 
+        {/* Game Properties section */}
         <FormSection title="Game Properties">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -473,6 +562,7 @@ function ServerConfigForm() {
           </div>
         </FormSection>
 
+        {/* Operating section */}
         <FormSection title="Operating">
           <div className="grid grid-cols-2 gap-4">
             <div>
