@@ -82,6 +82,30 @@ function ServerConfigForm() {
       return newData;
     });
   };
+    // Add mod change
+    const handleModChange = (mods) => {
+        setFormData(prevData => {
+          const newData = {
+            ...prevData,
+            game: {
+              ...prevData.game,
+              mods: mods.map(mod => ({
+                modId: mod.value,
+                name: mod.label,
+                version: ""
+              }))
+            }
+          };
+    
+          if (mods.length > 0) {
+            newData.game.supportedPlatforms = newData.game.supportedPlatforms.filter(
+              platform => platform !== "PLATFORM_PSN"
+            );
+          }
+    
+          return newData;
+        });
+      };
 
   const handlePlatformChange = (platform) => {
     setFormData(prevData => {
@@ -131,6 +155,8 @@ function ServerConfigForm() {
       </div>
     </div>
   );
+  
+  
 
   // Platform selector section
   const PlatformSection = () => {
@@ -301,6 +327,43 @@ function ServerConfigForm() {
                 />
                 <span className="ml-2 text-sm text-gray-600">Visible in server browser</span>
               </label>
+            </div>
+            <div>
+              <label className="block mb-2 text-sm font-medium text-gray-700">Mods</label>
+              <select
+                multiple
+                name="game.mods"
+                className="block w-full py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                value={formData.game.mods.map(mod => mod.modId)}
+                onChange={(e) => {
+                  const options = [...e.target.selectedOptions];
+                  const selectedMods = options.map(option => ({
+                    value: option.value,
+                    label: option.text
+                  }));
+                  handleModChange(selectedMods);
+                }}
+              >
+                <option value="59727DAE364DEADB">WeaponSwitching</option>
+                <option value="59727DAE32981C7D">Explosive Goats beta</option>
+                <option value="5972ABCD12345678">Example Mod 1</option>
+                <option value="5972EFGH87654321">Example Mod 2</option>
+              </select>
+              <p className="mt-2 text-sm text-gray-500">
+                Hold Ctrl (Windows) or Command (Mac) to select multiple mods
+              </p>
+              {formData.game.mods.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-700">Selected Mods:</h4>
+                  <ul className="mt-2 space-y-2">
+                    {formData.game.mods.map(mod => (
+                      <li key={mod.modId} className="text-sm text-gray-600">
+                        {mod.name} ({mod.modId})
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
             <PlatformSection />
           </div>

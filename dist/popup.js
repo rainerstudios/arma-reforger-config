@@ -107,6 +107,28 @@ function ServerConfigForm() {
       return newData;
     });
   };
+  // Add mod change
+  var handleModChange = function handleModChange(mods) {
+    setFormData(function (prevData) {
+      var newData = _objectSpread(_objectSpread({}, prevData), {}, {
+        game: _objectSpread(_objectSpread({}, prevData.game), {}, {
+          mods: mods.map(function (mod) {
+            return {
+              modId: mod.value,
+              name: mod.label,
+              version: ""
+            };
+          })
+        })
+      });
+      if (mods.length > 0) {
+        newData.game.supportedPlatforms = newData.game.supportedPlatforms.filter(function (platform) {
+          return platform !== "PLATFORM_PSN";
+        });
+      }
+      return newData;
+    });
+  };
   var handlePlatformChange = function handlePlatformChange(platform) {
     setFormData(function (prevData) {
       var newPlatforms = _toConsumableArray(prevData.game.supportedPlatforms);
@@ -306,7 +328,47 @@ function ServerConfigForm() {
     className: "text-blue-600 border-gray-300 rounded shadow-sm focus:border-blue-500 focus:ring-blue-500"
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", {
     className: "ml-2 text-sm text-gray-600"
-  }, "Visible in server browser"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(PlatformSection, null))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FormSection, {
+  }, "Visible in server browser"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
+    className: "block mb-2 text-sm font-medium text-gray-700"
+  }, "Mods"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("select", {
+    multiple: true,
+    name: "game.mods",
+    className: "block w-full py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500",
+    value: formData.game.mods.map(function (mod) {
+      return mod.modId;
+    }),
+    onChange: function onChange(e) {
+      var options = _toConsumableArray(e.target.selectedOptions);
+      var selectedMods = options.map(function (option) {
+        return {
+          value: option.value,
+          label: option.text
+        };
+      });
+      handleModChange(selectedMods);
+    }
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+    value: "59727DAE364DEADB"
+  }, "WeaponSwitching"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+    value: "59727DAE32981C7D"
+  }, "Explosive Goats beta"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+    value: "5972ABCD12345678"
+  }, "Example Mod 1"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("option", {
+    value: "5972EFGH87654321"
+  }, "Example Mod 2")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", {
+    className: "mt-2 text-sm text-gray-500"
+  }, "Hold Ctrl (Windows) or Command (Mac) to select multiple mods"), formData.game.mods.length > 0 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "mt-4"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h4", {
+    className: "text-sm font-medium text-gray-700"
+  }, "Selected Mods:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", {
+    className: "mt-2 space-y-2"
+  }, formData.game.mods.map(function (mod) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      key: mod.modId,
+      className: "text-sm text-gray-600"
+    }, mod.name, " (", mod.modId, ")");
+  })))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(PlatformSection, null))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FormSection, {
     title: "Game Properties"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "grid grid-cols-2 gap-4"
